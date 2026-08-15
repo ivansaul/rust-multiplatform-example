@@ -20,7 +20,9 @@ let project = Project(
                 "Rusty/Sources",
                 "Rusty/Resources",
             ],
-            dependencies: []
+            dependencies: [
+                .external(name: "Factory"),
+            ]
         ),
         .target(
             name: "RustyTests",
@@ -29,7 +31,7 @@ let project = Project(
             bundleId: "dev.tuist.RustyTests",
             infoPlist: .default,
             buildableFolders: [
-                "Rusty/Tests"
+                "Rusty/Tests",
             ],
             dependencies: [.target(name: "Rusty")]
         ),

@@ -23,6 +23,5 @@ struct SettingsView: View {
 #Preview {
     NavigationStack {
         SettingsView()
-            .environment(AppearanceViewModel())
     }
 }

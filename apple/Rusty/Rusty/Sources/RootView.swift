@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ContentView: View {
+struct RootView: View {
     var body: some View {
         NavigationStack {
             SettingsView()
@@ -12,7 +12,6 @@ struct ContentView: View {
 
 #Preview {
     NavigationStack {
-        ContentView()
-            .environment(AppearanceViewModel())
+        RootView()
     }
 }

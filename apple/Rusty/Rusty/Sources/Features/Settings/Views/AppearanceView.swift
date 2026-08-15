@@ -5,13 +5,14 @@
 //  Created by ivansaul on 8/14/26.
 //
 
+import Factory
 import SwiftUI
 
 struct AppearanceView: View {
-    @Environment(AppearanceViewModel.self) private var appearanceVM
+    @Injected(\.appearanceViewModel) private var appearanceViewModel
 
     var body: some View {
-        @Bindable var appearance = appearanceVM
+        @Bindable var appearance = appearanceViewModel
 
         List {
             Picker("Theme", selection: $appearance.theme) {
@@ -31,5 +32,4 @@ struct AppearanceView: View {
 
 #Preview {
     AppearanceView()
-        .environment(AppearanceViewModel())
 }

@@ -1,14 +1,14 @@
+import Factory
 import SwiftUI
 
 @main
 struct RustyApp: App {
-    @State private var appearanceVM = AppearanceViewModel()
+    @Injected(\.appearanceViewModel) private var appearanceViewModel: AppearanceViewModel
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(appearanceVM)
-                .preferredColorScheme(appearanceVM.theme.colorScheme)
+            RootView()
+                .preferredColorScheme(appearanceViewModel.theme.colorScheme)
         }
     }
 }

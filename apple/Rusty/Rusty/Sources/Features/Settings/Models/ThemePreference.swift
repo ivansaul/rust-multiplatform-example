@@ -1,5 +1,5 @@
 //
-//  AppearanceModels.swift
+//  ThemePreference.swift
 //  Rusty
 //
 //  Created by ivansaul on 8/14/26.
