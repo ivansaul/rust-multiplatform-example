@@ -29,7 +29,19 @@ impl RustyCore {
         let runtime = crate::runtime::runtime();
         let pool = runtime.block_on(build_pool(&db_path))?;
         runtime.block_on(sqlx_migrate(&pool))?;
+        Self::from_pool(pool)
+    }
 
+    pub fn preview() -> Result<Self, CoreError> {
+        let runtime = crate::runtime::runtime();
+        let pool = runtime.block_on(build_memory_pool())?;
+        runtime.block_on(sqlx_migrate(&pool))?;
+        let core = Self::from_pool(pool)?;
+        runtime.block_on(seed_preview_data(&core))?;
+        Ok(core)
+    }
+
+    fn from_pool(pool: SqlitePool) -> Result<Self, CoreError> {
         let database = Database::new(pool);
         let repository = SqlxTaskRepository::new(Arc::new(database));
         let service_core = TasksServiceCore::new(repository);
@@ -66,4 +78,31 @@ async fn sqlx_migrate(pool: &SqlitePool) -> Result<(), CoreError> {
             eprintln!("SQLx MIGRATION ERROR: {e:?}");
             CoreError::Database
         })
+}
+
+// Preview
+
+async fn build_memory_pool() -> Result<SqlitePool, CoreError> {
+    SqlitePoolOptions::new()
+        .max_connections(1)
+        .connect("sqlite::memory:")
+        .await
+        .map_err(|e| {
+            eprintln!("SQLx ERROR: {e:?}");
+            CoreError::Database
+        })
+}
+
+async fn seed_preview_data(core: &RustyCore) -> Result<(), CoreError> {
+    use crate::ffi::tasks::models::CreateTaskItem;
+    for i in 0..5 {
+        let task = CreateTaskItem {
+            title: format!("Task {}", i),
+        };
+        core.tasks().create_task(task).await.map_err(|e| {
+            eprintln!("SEED ERROR: {e:?}");
+            CoreError::Internal
+        })?;
+    }
+    Ok(())
 }
