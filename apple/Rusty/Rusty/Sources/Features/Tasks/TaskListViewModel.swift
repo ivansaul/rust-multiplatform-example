@@ -8,31 +8,12 @@
 import Foundation
 import RustyCore
 
-//@Observable
-//@MainActor
-//class TaskListViewModel {
-//    private(set) var state: AsyncValue<[TaskItem]> = .idle
-//
-//    private let service: TaskService
-//
-//    init(service: TaskService) {
-//        self.service = service
-//    }
-//
-//    func load() async {
-//        state = .loading
-//        do {
-//            state = try .data(await service.listTasks())
-//        } catch {
-//            state = .error(error)
-//        }
-//    }
-//}
-
 @Observable
 @MainActor
 class TaskListViewModel {
     private(set) var tasks: AsyncValue<[TaskItem]> = .idle
+    private(set) var onAction: AsyncValue<Void> = .idle
+    var showErrorAlert: Bool = false
 
     private let service: TaskService
 
@@ -40,43 +21,56 @@ class TaskListViewModel {
         self.service = service
     }
 
-    func toggle_completed(taskId: String) async {
+    func toggle_completion(taskId: String) async {
         guard
-            case let .data(tasks) = tasks,
-            let index = tasks.firstIndex(where: { $0.id == taskId })
+            case let .data(currentTasks) = tasks,
+            let task = currentTasks.first(where: { $0.id == taskId })
         else { return }
 
-        let task = tasks[index]
-
         do {
-            if task.completed {
-                _ = try await service.reopenTask(id: taskId)
-            } else {
-                _ = try await service.completeTask(id: taskId)
-            }
-            await listTasks()
+            let updatedTask = task.completed
+                ? try await service.reopenTask(id: taskId)
+                : try await service.completeTask(id: taskId)
+
+            let updatedTasks = currentTasks.map { $0.id == taskId ? updatedTask : $0 }
+            tasks = .data(updatedTasks)
         } catch {
-            print(error)
+            handleError(error)
         }
     }
 
     func deleteTask(taskId: String) async {
+        onAction = .loading
         do {
             try await service.deleteTask(id: taskId)
-            await listTasks()
+            await refresh()
         } catch {
-            print(error)
+            handleError(error)
         }
     }
 
     func listTasks() async {
         tasks = .loading
         do {
+            tasks = try .data(await service.listTasks())
+        } catch {
+            tasks = .error(error)
+        }
+    }
+
+    func refresh() async {
+        do {
             let res = try await service.listTasks()
             tasks = .data(res)
         } catch {
-            print(error)
-            tasks = .error(error)
+            handleError(error)
         }
+    }
+}
+
+extension TaskListViewModel {
+    private func handleError(_ error: Error) {
+        onAction = .error(error)
+        showErrorAlert = true
     }
 }

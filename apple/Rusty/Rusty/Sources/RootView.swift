@@ -3,7 +3,7 @@ import SwiftUI
 struct RootView: View {
     var body: some View {
         NavigationStack {
-            SettingsView()
+            TaskListView()
                 .padding()
                 .navigationTitle("Rusty")
         }

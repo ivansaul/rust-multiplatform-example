@@ -6,34 +6,33 @@
 //
 
 import Factory
-import Foundation
 import RustyCore
 
 extension Container {
-    @MainActor
-    var appearanceViewModel: Factory<AppearanceViewModel> {
-        self { @MainActor in AppearanceViewModel(keyValueStorage: self.keyValueStorage()) }
-            .singleton
-    }
-
-    var keyValueStorage: Factory<KeyValueStorage> {
-        self { UserDefaultsStorage() }
-            .onPreview { InMemoryStorage() }
-            .singleton
-    }
-
-    var taskViewModel: Factory<TaskViewModel> {
-        self { @MainActor in TaskViewModel(service: self.appCore().tasks()) }
-    }
-
     var appCore: Factory<RustyCore> {
         self { fatalError() }
+            .onPreview { try! RustyCore.preview() }
+            .singleton
+    }
+
+    @MainActor
+    var appBootstrap: Factory<AppBootstrap> {
+        self { @MainActor in AppBootstrap(storageManager: self.storageManager()) }
+            .singleton
+    }
+
+    var storageManager: Factory<StorageManager> {
+        self { StorageManager() }
             .singleton
     }
 }
 
 extension Container {
-    var taskCreateViewModel: Factory<TaskCreateViewModel> {
-        self { @MainActor in TaskCreateViewModel(taskService: self.appCore().tasks()) }
+    var taskListViewModel: Factory<TaskListViewModel> {
+        self { @MainActor in TaskListViewModel(service: self.appCore().tasks()) }
+    }
+
+    var taskCreateViewModel: Factory<CreateTaskViewModel> {
+        self { @MainActor in CreateTaskViewModel(taskService: self.appCore().tasks()) }
     }
 }

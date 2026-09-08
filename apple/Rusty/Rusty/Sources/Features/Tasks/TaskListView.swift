@@ -10,45 +10,34 @@ import RustyCore
 import SwiftUI
 
 struct TaskListView: View {
-    @Injected(\.taskViewModel) private var viewModel
+    @Injected(\.taskListViewModel) private var viewModel
     @State private var showSheet: Bool = false
 
     var body: some View {
-        @Bindable var vm = viewModel
-        VStack {
-            TextField("New task...", text: $vm.textFieldValue)
-                .padding()
-                .overlay {
-                    RoundedRectangle(cornerRadius: 15)
-                        .stroke(Color.blue, lineWidth: 2)
+        @Bindable var viewModel = viewModel
+        List {
+            switch viewModel.tasks {
+            case .loading:
+                ProgressView()
+            case let .error(error):
+                Text(error.localizedDescription)
+            case let .data(tasks):
+                ForEach(tasks, id: \.id) { task in
+                    TaskRowView(
+                        task: task,
+                        onToggle: { Task { await viewModel.toggle_completion(taskId: task.id) } },
+                        onDelete: { Task { await viewModel.deleteTask(taskId: task.id) } }
+                    )
                 }
-
-            Button("Add Task") {
-                Task { await vm.create_task() }
+            case .idle:
+                EmptyView()
             }
-            .buttonStyle(.borderedProminent)
-
-            List {
-                switch viewModel.tasks {
-                case .loading:
-                    ProgressView()
-                case let .error(error):
-                    Text(error.localizedDescription)
-                case let .data(tasks):
-                    ForEach(tasks, id: \.id) { task in
-                        TaskRowView(
-                            task: task,
-                            onToggle: { Task { await vm.toggle_completed(taskId: task.id) } },
-                            onDelete: { Task { await vm.deleteTask(taskId: task.id) } }
-                        )
-                    }
-                case .idle:
-                    EmptyView()
-                }
-            }
-            .listStyle(.plain)
         }
+        .listStyle(.plain)
         .navigationTitle("Tasks")
+        .alert("onActionError", isPresented: $viewModel.showErrorAlert) {
+            Button("Cancelar", role: .cancel) {}
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -58,8 +47,10 @@ struct TaskListView: View {
                 }
             }
         }
-        .sheet(isPresented: $showSheet, content: {
-            TaskCreateView()
+        .sheet(isPresented: $showSheet, onDismiss: {
+            Task { await viewModel.refresh() }
+        }, content: {
+            CreateTaskView()
                 .presentationDetents([.fraction(0.4)])
                 .presentationDragIndicator(.visible)
         })

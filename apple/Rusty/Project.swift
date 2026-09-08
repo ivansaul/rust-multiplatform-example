@@ -8,6 +8,7 @@ let project = Project(
             destinations: .iOS,
             product: .app,
             bundleId: "dev.tuist.Rusty",
+            deploymentTargets: .iOS("17.0"),
             infoPlist: .extendingDefault(
                 with: [
                     "UILaunchScreen": [
@@ -22,6 +23,8 @@ let project = Project(
             ],
             dependencies: [
                 .external(name: "Factory"),
+                .external(name: "RustyCore"),
+                .sdk(name: "SystemConfiguration", type: .framework, status: .required),
             ]
         ),
         .target(

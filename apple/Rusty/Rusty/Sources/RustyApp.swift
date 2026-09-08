@@ -1,14 +1,24 @@
 import Factory
+import RustyCore
 import SwiftUI
 
 @main
 struct RustyApp: App {
-    @Injected(\.appearanceViewModel) private var appearanceViewModel: AppearanceViewModel
+    @Injected(\.appBootstrap) private var bootstrap
 
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .preferredColorScheme(appearanceViewModel.theme.colorScheme)
+            Group {
+                switch bootstrap.state {
+                case .data:
+                    RootView()
+                case .error:
+                    Text("Some Error Ocurred")
+                default:
+                    ProgressView()
+                }
+            }
+            .task { await bootstrap.start() }
         }
     }
 }
