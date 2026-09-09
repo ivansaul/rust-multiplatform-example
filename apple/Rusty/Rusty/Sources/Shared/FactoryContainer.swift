@@ -36,3 +36,11 @@ extension Container {
         self { @MainActor in CreateTaskViewModel(taskService: self.appCore().tasks()) }
     }
 }
+
+extension Container {
+    @MainActor
+    var settingsViewModel: Factory<SettingsViewModel> {
+        self { @MainActor in SettingsViewModel(settingsService: self.appCore().settings()) }
+            .singleton
+    }
+}

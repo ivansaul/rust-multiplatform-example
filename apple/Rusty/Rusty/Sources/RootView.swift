@@ -1,17 +1,26 @@
+import Factory
+import RustyCore
 import SwiftUI
 
 struct RootView: View {
-    var body: some View {
-        NavigationStack {
-            TaskListView()
-                .padding()
-                .navigationTitle("Rusty")
-        }
-    }
-}
+    @Injected(\.settingsViewModel) private var settings
 
-#Preview {
-    NavigationStack {
-        RootView()
+    var body: some View {
+        TabView {
+            NavigationStack {
+                TaskListView()
+            }
+            .tabItem {
+                Label("Tasks", systemImage: "checkmark.circle")
+            }
+
+            NavigationStack {
+                SettingsListView()
+            }
+            .tabItem {
+                Label("Settings", systemImage: "gearshape")
+            }
+        }
+        .preferredColorScheme(settings.colorScheme)
     }
 }

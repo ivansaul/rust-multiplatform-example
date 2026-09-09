@@ -1,5 +1,5 @@
 //
-//  SettingsView.swift
+//  SettingsListView.swift
 //  Rusty
 //
 //  Created by ivansaul on 8/14/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SettingsView: View {
+struct SettingsListView: View {
     var body: some View {
         List {
             NavigationLink {
@@ -22,6 +22,6 @@ struct SettingsView: View {
 
 #Preview {
     NavigationStack {
-        SettingsView()
+        SettingsListView()
     }
 }
