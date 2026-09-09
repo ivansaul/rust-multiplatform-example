@@ -6,8 +6,7 @@ use crate::{
         models::{CreateTaskItem, TaskItem, UpdateTaskItem},
     },
     tasks::{
-        models::TaskId, sqlx_task_repository::SqlxTaskRepository,
-        task_service::TaskService as CoreTaskService,
+        sqlx_task_repository::SqlxTaskRepository, task_service::TaskService as CoreTaskService,
     },
 };
 
