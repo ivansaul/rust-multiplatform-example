@@ -43,7 +43,7 @@ struct TaskListView: View {
                 Button {
                     showSheet.toggle()
                 } label: {
-                    Image(systemName: "plus.circle.dashed")
+                    Image(systemName: "plus.circle")
                 }
             }
         }
