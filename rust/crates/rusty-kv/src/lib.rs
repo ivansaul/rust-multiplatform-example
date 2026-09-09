@@ -45,7 +45,7 @@ impl KeyValue {
             .map_err(map_redb_error)?
             .map(|guard| serde_json::from_slice(guard.value()))
             .transpose()
-            .map_err(|e| KeyValueError::Serialization(e))
+            .map_err(KeyValueError::Serialization)
     }
 
     pub fn set<T>(&self, key: impl AsRef<str>, value: &T) -> Result<(), KeyValueError>

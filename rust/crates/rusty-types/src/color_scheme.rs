@@ -25,15 +25,3 @@ impl From<&str> for ColorSchemeSelection {
         }
     }
 }
-
-// impl From<String> for ColorSchemeSelection {
-//     fn from(value: String) -> Self {
-//         value.as_str().into()
-//     }
-// }
-
-impl From<ColorSchemeSelection> for String {
-    fn from(value: ColorSchemeSelection) -> Self {
-        value.into()
-    }
-}
