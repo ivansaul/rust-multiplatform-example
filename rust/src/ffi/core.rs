@@ -4,6 +4,7 @@ use std::{
 };
 
 use rusty_kv::KeyValue;
+use rusty_types::app_context::AppContext;
 use sqlx::{
     SqlitePool,
     sqlite::{SqliteConnectOptions, SqlitePoolOptions},
@@ -12,7 +13,7 @@ use sqlx::{
 use crate::{
     database::Database,
     ffi::{
-        app::AppContext, error::CoreError, settings::SettingsService as FfiSettingsService,
+        error::CoreError, settings::SettingsService as FfiSettingsService,
         tasks::TaskService as FfiTaskService,
     },
     settings::SettingsService as CoreSettingsService,
