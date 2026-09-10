@@ -10,7 +10,7 @@ import RustyCore
 import SwiftUI
 
 struct CreateTaskView: View {
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
     @Injected(\.taskCreateViewModel) private var viewModel
 
     var body: some View {
