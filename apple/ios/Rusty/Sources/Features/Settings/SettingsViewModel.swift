@@ -10,16 +10,7 @@ import SwiftUI
 @MainActor
 @Observable
 final class SettingsViewModel {
-    var selectedColorScheme: ColorSchemeSelection {
-        didSet {
-            guard oldValue != selectedColorScheme else { return }
-            saveColorScheme(selectedColorScheme)
-        }
-    }
-
-    var colorScheme: ColorScheme? {
-        selectedColorScheme.colorScheme
-    }
+    private(set) var selectedColorScheme: ColorSchemeSelection
 
     private let settingsService: SettingsService
 
@@ -28,12 +19,21 @@ final class SettingsViewModel {
         selectedColorScheme = settingsService.colorScheme()
     }
 
-    private func saveColorScheme(_ scheme: ColorSchemeSelection) {
+    func updateColorScheme(_ scheme: ColorSchemeSelection) {
+        guard scheme != selectedColorScheme else { return }
+        selectedColorScheme = scheme
+
         do {
             try settingsService.updateColorScheme(scheme: scheme)
         } catch {
             print(error)
         }
+    }
+}
+
+extension SettingsViewModel {
+    var colorScheme: ColorScheme? {
+        selectedColorScheme.colorScheme
     }
 }
 

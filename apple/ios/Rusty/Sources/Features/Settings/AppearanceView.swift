@@ -13,10 +13,8 @@ struct AppearanceView: View {
     @Injected(\.settingsViewModel) private var settingsViewModel
 
     var body: some View {
-        @Bindable var settingsViewModel = settingsViewModel
-
         List {
-            Picker("Theme", selection: $settingsViewModel.selectedColorScheme) {
+            Picker("Theme", selection: colorShemeBinding) {
                 Text("Light").tag(ColorSchemeSelection.light)
                 Text("Dark").tag(ColorSchemeSelection.dark)
                 Text("System").tag(ColorSchemeSelection.system)
@@ -24,6 +22,15 @@ struct AppearanceView: View {
             .pickerStyle(.inline)
         }
         .navigationTitle("Appearance")
+    }
+}
+
+extension AppearanceView {
+    private var colorShemeBinding: Binding<ColorSchemeSelection> {
+        Binding(
+            get: { settingsViewModel.selectedColorScheme },
+            set: { settingsViewModel.updateColorScheme($0) }
+        )
     }
 }
 
